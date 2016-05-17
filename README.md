@@ -1,7 +1,7 @@
 # Weather-Lite
-Android Open Source App About Weather
+Weather-Lite是一款开源的天气应用APP，简约但并不简单。
 
-## screen cut
+## 应用截图
 ![](http://7xprgn.com1.z0.glb.clouddn.com/device-2016-05-17-173036.png)
 ![](http://7xprgn.com1.z0.glb.clouddn.com/device-2016-05-17-173115.png)
 ![](http://7xprgn.com1.z0.glb.clouddn.com/device-2016-05-17-173149.png)
