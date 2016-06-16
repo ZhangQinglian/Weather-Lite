@@ -8,40 +8,13 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.zqlite.android.weather_lite.AddCityActivity"
+    tools:context=".ui.citylist.AddCityActivity"
 
     android:transitionName="aaaaa">
-
-    <TextView
-        android:id="@+id/tip"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="请输入城市名／城市拼音／拼音缩写"
-        android:textColor="@color/colorPrimary"
-        android:textSize="12sp"
-        android:paddingBottom="5dp"/>
-
-    <android.support.v7.widget.CardView
-        android:id="@+id/search_area"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_below="@id/tip"
-        android:background="@android:color/white">
-
-        <SearchView
-            android:id="@+id/search_box"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:lines="1"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp" />
-    </android.support.v7.widget.CardView>
-
-    <ListView
-        android:id="@+id/search_result"
-        android:layout_width="match_parent"
+    <RelativeLayout
+        android:id="@+id/content"
         android:layout_height="match_parent"
-        android:layout_below="@id/search_area"
-        android:divider="@null" />
+        android:layout_width="match_parent"/>
+
+
 </RelativeLayout>

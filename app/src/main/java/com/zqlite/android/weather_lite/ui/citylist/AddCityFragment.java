@@ -1,40 +1,39 @@
-package com.zqlite.android.weather_lite;
+package com.zqlite.android.weather_lite.ui.citylist;
 
-import android.animation.Animator;
 import android.content.Intent;
-import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
 
+import com.zqlite.android.weather_lite.R;
 import com.zqlite.android.weather_lite.entity.CityData;
+import com.zqlite.android.weather_lite.ui.main.MainActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import rx.functions.Action1;
 
-public class AddCityActivity extends RichActivity {
+/**
+ * Created by scott on 6/16/16.
+ */
+public class AddCityFragment extends Fragment implements AddCityContract.View{
 
     private ListView resultCities ;
     private SearchResultAdapter adapter ;
+    private AddCityContract.Presenter presenter;
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_city);
-        SearchView searchBox = (SearchView) findViewById(R.id.search_box);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.add_city_fragment,null,false);
+        SearchView searchBox = (SearchView) view.findViewById(R.id.search_box);
         assert searchBox != null;
         searchBox.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -47,17 +46,7 @@ public class AddCityActivity extends RichActivity {
             public boolean onQueryTextChange(String newText) {
                 newText = newText.toLowerCase();
                 if(newText != null && newText.trim().length() > 1){
-                    MyApplication.getInstance().getWeatherService().searchCities(newText.trim(), new Action1<List<CityData>>() {
-                        @Override
-                        public void call(final List<CityData> cityDatas) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    adapter.setResult(cityDatas);
-                                }
-                            });
-                        }
-                    });
+                    presenter.search(newText);
                 }else{
                     adapter.removeAll();
                 }
@@ -65,7 +54,7 @@ public class AddCityActivity extends RichActivity {
             }
         });
 
-        resultCities = (ListView) findViewById(R.id.search_result);
+        resultCities = (ListView) view.findViewById(R.id.search_result);
         adapter = new SearchResultAdapter();
         resultCities.setAdapter(adapter);
         resultCities.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -75,13 +64,29 @@ public class AddCityActivity extends RichActivity {
                 //Log.d("weather", cityData.toString());
                 Intent intent = new Intent();
                 intent.putExtra(MainActivity.SEARCH_CITY_KEY, cityData.city_id);
-                setResult(RESULT_OK, intent);
-                finish();
+                getActivity().setResult(MainActivity.RESULT_OK, intent);
+                getActivity().finish();
+            }
+        });
+        return view;
+    }
+
+    @Override
+    public void result(final List<CityData> datas) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                adapter.setResult(datas);
             }
         });
     }
 
-    private class SearchResultAdapter extends BaseAdapter{
+    @Override
+    public void setPresenter(AddCityContract.Presenter presenter) {
+        this.presenter = presenter;
+    }
+
+    private class SearchResultAdapter extends BaseAdapter {
 
 
         private List<CityData> result = new ArrayList<>();
@@ -117,7 +122,7 @@ public class AddCityActivity extends RichActivity {
 
             CityHolder holder ;
             if(convertView == null){
-                convertView = getLayoutInflater().inflate(R.layout.search_result_item,null);
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.search_result_item,null);
                 holder = new CityHolder();
                 holder.searchResultItem = (TextView) convertView.findViewById(R.id.search_result_item);
                 convertView.setTag(holder);
@@ -133,5 +138,4 @@ public class AddCityActivity extends RichActivity {
 
         }
     }
-
 }

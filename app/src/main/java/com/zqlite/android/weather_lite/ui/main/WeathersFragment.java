@@ -1,136 +1,67 @@
-package com.zqlite.android.weather_lite;
+package com.zqlite.android.weather_lite.ui.main;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
-import com.zqlite.android.weather_lite.constant.WeatherConstant;
-import com.zqlite.android.weather_lite.dao.HeWeatherPickerImpl;
-import com.zqlite.android.weather_lite.database.WeatherDatabaseHelper;
-import com.zqlite.android.weather_lite.entity.CityData;
+import com.zqlite.android.weather_lite.CityWeatherActivity;
+import com.zqlite.android.weather_lite.MyApplication;
+import com.zqlite.android.weather_lite.R;
 import com.zqlite.android.weather_lite.entity.MyCity;
-import com.zqlite.android.weather_lite.entity.WeatherBuilder;
 import com.zqlite.android.weather_lite.entity.WeatherData;
-import com.zqlite.android.weather_lite.service.WeatherService;
+import com.zqlite.android.weather_lite.utils.GroceryStore;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import rx.functions.Action1;
+/**
+ * Created by scott on 6/16/16.
+ */
+public class WeathersFragment extends Fragment implements MainContract.View{
 
-public class MainActivity extends RichActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+    private MainContract.Presenter presenter;
 
-    public static final int SEARCH_CITY_CODE = 12;
+    WeatherAdaper weatherAdaper ;
 
-    public static final String SEARCH_CITY_KEY = "search_city_key";
-
-    private WeatherService weatherService;
-
-    private RecyclerView weatherGrid;
-    private WeatherAdaper weatherAdaper;
     private List<MyCity> gMyCities;
 
-    private SwipeRefreshLayout swipeRefreshLayout;
+    SwipeRefreshLayout swipeRefreshLayout;
 
-    private Handler handler = new Handler();
+    Handler handler = new Handler();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        if (fab != null) {
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(MainActivity.this, AddCityActivity.class);
-                    ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, fab, "aaaaa");
-                    startActivityForResult(intent, SEARCH_CITY_CODE, options.toBundle());
-                }
-            });
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-
-        weatherService = MyApplication.getInstance().getWeatherService();
-        if (isNetWorkAccess()) {
-            if (!MyApplication.getInstance().isInitCities()) {
-                //初始化城市列表
-                weatherService.initCities(WeatherConstant.CITY_SEARCH_TYPE_ALL_CHINA, new HeWeatherPickerImpl.InitCitiesCallback() {
-                    @Override
-                    public void initSuccess() {
-                        MyApplication.getInstance().setInitCities(true);
-                    }
-
-                    @Override
-                    public void initFailure() {
-                        MyApplication.getInstance().setInitCities(false);
-                    }
-                });
-            }
-        } else {
-            toast("无网络，2秒后自动退出");
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    finish();
-                }
-            }, 2000);
-        }
-
-        initView();
-        initWeather();
+        gMyCities = new ArrayList<>();
     }
 
-    //初始化布局
-    private void initView() {
-        weatherGrid = (RecyclerView) findViewById(R.id.weather_grid);
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view =  inflater.inflate(R.layout.content_main,null,false);
+        RecyclerView weatherGrid = (RecyclerView) view.findViewById(R.id.weather_grid);
         weatherGrid.setHasFixedSize(true);
         weatherAdaper = new WeatherAdaper();
         weatherGrid.setAdapter(weatherAdaper);
-        GridLayoutManager gm = new GridLayoutManager(this, 2);
+        GridLayoutManager gm = new GridLayoutManager(getContext(), 2);
 
         weatherGrid.setLayoutManager(gm);
         weatherGrid.setItemAnimator(new DefaultItemAnimator());
@@ -138,126 +69,72 @@ public class MainActivity extends RichActivity
         ItemTouchHelper touchHelper = new ItemTouchHelper(touchCallback);
         touchHelper.attachToRecyclerView(weatherGrid);
 
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_content);
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_content);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (!isNetWorkAccess()) {
-                    toast("无网络，请尝试联网并下拉刷新");
+                if (!GroceryStore.isNetWorkAccess(getContext())) {
+                    GroceryStore.toast("无网络，请尝试联网并下拉刷新",getContext());
                     swipeRefreshLayout.setRefreshing(false);
                     return;
                 }
-                initWeather();
+                presenter.start();
             }
         });
-
+        return view;
     }
 
-    //初始化天气
-    private void initWeather() {
-        if (!isNetWorkAccess()) {
-            return;
-        }
-        weatherAdaper.removeALl();
-        weatherService.getAllMyCities(new Action1<List<MyCity>>() {
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        handler.postDelayed(new Runnable() {
             @Override
-            public void call(List<MyCity> cities) {
-                gMyCities = cities;
-                List<String> cityIds = new ArrayList<String>();
-                for (MyCity city : cities) {
-                    cityIds.add(city.cityId);
+            public void run() {
+                swipeRefreshLayout.setRefreshing(true);
+                if (!GroceryStore.isNetWorkAccess(getContext())) {
+                    GroceryStore.toast("无网络，请尝试联网并下拉刷新",getContext());
+                    swipeRefreshLayout.setRefreshing(false);
+                    return;
                 }
-                weatherService.pickWeathers(cityIds, new Action1<List<WeatherData>>() {
-                    @Override
-                    public void call(List<WeatherData> weatherDatas) {
-                        for (WeatherData data : weatherDatas) {
-                            weatherAdaper.addWeatherData(data);
-                        }
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                swipeRefreshLayout.setRefreshing(false);
-                            }
-                        });
-                    }
-                });
+                presenter.start();
+            }
+        },1000);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    public void setPresenter(MainContract.Presenter presenter) {
+        this.presenter = presenter;
+    }
+
+    @Override
+    public void removeAll() {
+        weatherAdaper.removeALl();
+    }
+
+    @Override
+    public void addWeather(WeatherData data) {
+        weatherAdaper.addWeatherData(data);
+    }
+
+    @Override
+    public void stopFresh() {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(false);
             }
         });
-
     }
 
     @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //initWeather();
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-//        if (id == R.id.nav_camera) {
-//            // Handle the camera action
-//        } else if (id == R.id.nav_gallery) {
-//
-//        } else if (id == R.id.nav_slideshow) {
-//
-//        } else if (id == R.id.nav_manage) {
-//
-//        } else if (id == R.id.nav_share) {
-//
-//        } else if (id == R.id.nav_send) {
-//
-//        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == SEARCH_CITY_CODE) {
-            if (resultCode == RESULT_OK) {
-                final String cityId = data.getExtras().getString(SEARCH_CITY_KEY);
-                if (gMyCities != null ) {
-                    for(MyCity myCity : gMyCities){
-                        if(myCity.cityId.equals(cityId)){
-                            toast("该城市已存在");
-                            return;
-                        }
-                    }
-                }
-                Log.d("weather", "  cityId = " + cityId);
-                weatherService.pick(cityId, new Action1<WeatherBuilder>() {
-                    @Override
-                    public void call(WeatherBuilder weatherBuilder) {
-                        weatherService.addMyCity(cityId);
-                        final WeatherData weatherData = weatherBuilder.build();
-                        Log.d("weather", "  weatherData = " + weatherData.toString());
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                weatherAdaper.addWeatherData(weatherData);
-                            }
-                        });
-                    }
-                });
-            }
-        }
+    public void setMyCities(List<MyCity> cities) {
+        gMyCities = cities;
     }
 
     public static class WeatherAdaper extends RecyclerView.Adapter<WeatherAdaper.MyViewHolder> {
@@ -437,4 +314,24 @@ public class MainActivity extends RichActivity
             }
         }
     };
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == MainActivity.SEARCH_CITY_CODE) {
+            if (resultCode == MainActivity.RESULT_OK) {
+                final String cityId = data.getExtras().getString(MainActivity.SEARCH_CITY_KEY);
+                if (gMyCities != null ) {
+                    for(MyCity myCity : gMyCities){
+                        if(myCity.cityId.equals(cityId)){
+                            GroceryStore.toast("该城市已存在",getContext());
+                            return;
+                        }
+                    }
+                }
+                Log.d("weather", "  cityId = " + cityId);
+                presenter.pickWeather(cityId);
+            }
+        }
+    }
 }

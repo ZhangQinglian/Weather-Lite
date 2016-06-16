@@ -16,7 +16,7 @@ public interface HeWeatherREST {
     public static final String HE_WEATHER_API = "https://api.heweather.com/" ;
 
     //在http://www.heweather.com处申请apikey并替换xxx
-    public static final String API_KEY = "xxx";
+    public static final String API_KEY = "601297358cee47b6950b984c10fca845";
 
     @GET("x3/weather")
     Observable<ResponseBody> getWeatherAsync(@Query("cityid") String city,@Query("key") String key);
