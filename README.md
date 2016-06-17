@@ -1,26 +1,28 @@
 # Weather-Lite
-Weather-Lite是一款开源的天气应用APP，简约但并不简单。
+Weather-Lite is an Android weather app.[中文](https://github.com/ZhangQinglian/Weather-Lite/blob/master/README_CH.md)
 
-## 天气预报接口
-Weather-Lite采用的天气预报接口为[和风天气预报接口服务](http://www.heweather.com)的免费接口，虽免费但使用的时候仍需注册并获得相关apikey。
-⚠️Weather-Lite同步到本地是无法正常使用的，需要你在上述网站注册开发者并获取apikey然后替换下面的代码：
+## Weather API
+Weather-Lite use [HeWeather API](http://www.heweather.com),to use the api you should sign up and get your APIKEY and replace the 'xxx':
 
 **com.zqlite.android.weather_lite.rest.HeWeatherREST.java**
 ```java
-    //在http://www.heweather.com处申请apikey并替换xxx
+    //get apikey from http://www.heweather.com
     public static final String API_KEY = "xxx";
 ```
-## 功能
-- 可自由添加国内2567个城市
-- 自由排列城市顺序
-- 首页查看城市列表的天气概览，点击城市可详细查看城市未来七天天气，天气指数等信息
+## Function
+- add 2567 cities in China.
+- custom the cities' sort order.
+- preview city weather,add city witch you need,preview city's weather in detail.
 
-## 相关技术
-- API网络请求：retrofit
-- 异步网络请求：rxjava
-- 天气图标：Google now weather
+## Library
+- retrofit
+- rxjava
 
-## 应用截图
+## Branch
+- master : no architecture
+- use-mvpc : use mvp＋clean architecture
+
+## ScreenS capture
 ![](http://7xprgn.com1.z0.glb.clouddn.com/device-2016-05-17-173036.png)
 ![](http://7xprgn.com1.z0.glb.clouddn.com/device-2016-05-17-173115.png)
 ![](http://7xprgn.com1.z0.glb.clouddn.com/device-2016-05-17-173149.png)
