@@ -2,7 +2,7 @@
 Weather-Lite is an Android weather app.[中文](https://github.com/ZhangQinglian/Weather-Lite/blob/master/README_CH.md)
 
 ## Weather API
-Weather-Lite use [HeWeather API](http://www.heweather.com),to use the api you should sign up and get your APIKEY and replace the 'xxx':
+Weather-Lite use [HeWeather API](http://www.heweather.com),you should sign up to get the APIKEY and replace the 'xxx':
 
 **com.zqlite.android.weather_lite.rest.HeWeatherREST.java**
 ```java
