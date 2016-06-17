@@ -28,7 +28,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.City"/>
         <activity
-            android:name=".CityWeatherActivity"
+            android:name=".ui.city.CityWeatherActivity"
             android:label="@string/title_activity_city_weather"
             android:theme="@style/AppTheme.NoActionBar"/>
     </application>

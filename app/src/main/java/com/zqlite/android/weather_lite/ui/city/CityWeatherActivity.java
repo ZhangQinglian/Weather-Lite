@@ -1,4 +1,4 @@
-package com.zqlite.android.weather_lite;
+package com.zqlite.android.weather_lite.ui.city;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.zqlite.android.weather_lite.R;
 import com.zqlite.android.weather_lite.constant.WeatherConstant;
 import com.zqlite.android.weather_lite.entity.HeWeatherBuilder;
 import com.zqlite.android.weather_lite.entity.WeatherData;
@@ -21,6 +22,9 @@ import com.zqlite.android.weather_lite.entity.WeatherData;
 import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * this activity just be used to show the weather data,there is no need to apply MVPC here
+ */
 public class CityWeatherActivity extends AppCompatActivity {
 
     private TextView weatherCond;

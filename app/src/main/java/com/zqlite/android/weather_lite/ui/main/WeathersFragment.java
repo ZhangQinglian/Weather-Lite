@@ -21,7 +21,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.zqlite.android.weather_lite.CityWeatherActivity;
+import com.zqlite.android.weather_lite.ui.city.CityWeatherActivity;
 import com.zqlite.android.weather_lite.MyApplication;
 import com.zqlite.android.weather_lite.R;
 import com.zqlite.android.weather_lite.entity.MyCity;
