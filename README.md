@@ -29,7 +29,8 @@ Weather-Lite use [HeWeather API](http://www.heweather.com),you should sign up to
 ![](http://7xprgn.com1.z0.glb.clouddn.com/device-2016-05-17-173603.png)
 ![](http://7xprgn.com1.z0.glb.clouddn.com/device-2016-05-17-173203.png)
 
-
+## Download
+![](http://7xprgn.com1.z0.glb.clouddn.com/b785541447b20d04270f8ff0dd495d4d.png)
 #License
 
      Copyright 2016 zhangqinglian
